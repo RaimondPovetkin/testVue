@@ -12,13 +12,13 @@
             size="32"
         ></v-avatar>
 
-        <v-btn
-            v-for="link in links"
-            :key="link"
-            text
-        >
-          {{ link }}
-        </v-btn>
+<!--        <v-btn-->
+<!--            v-for="link in links"-->
+<!--            :key="link"-->
+<!--            text-->
+<!--        >-->
+<!--          {{ link }}-->
+<!--        </v-btn>-->
 
         <v-spacer></v-spacer>
 
@@ -167,6 +167,7 @@
               </v-data-table>
               <div class="text-center mt-10 pb-5">
                 <v-pagination
+                    v-if="paginationLength>1"
                     v-model="page"
                     :length="paginationLength"
                 ></v-pagination>
@@ -182,6 +183,7 @@
 <script>
 export default {
   data: () => ({
+    paginationLength:2,
     filter:'',
     page:1,
     links: [
@@ -334,9 +336,6 @@ export default {
     endIndex() {
       return this.page * 10;
     },
-    paginationLength() {
-      return Math.ceil(this.paginatedItems.length/10)
-    },
     filteredItems() {
       return this.cloudItems.filter(item => item.title.toUpperCase().includes(this.filter.toUpperCase()));
     },
@@ -347,8 +346,14 @@ export default {
   watch:{
     filter() {
       this.page = 1;
+      this.changePaginationLength()
     },
   },
+  methods:{
+    changePaginationLength(){
+      this.paginationLength = Math.ceil(this.filteredItems.length/10)
+    }
+  }
 }
 </script>
 <style>

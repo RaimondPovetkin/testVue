@@ -1,32 +1,35 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
+
+
+  <div v-if="screenWidth>700">
+    <home-desktop/>
   </div>
+  <div v-else>
+    <home-mobile/>
+  </div>
+
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+import HomeDesktop from "@/components/HomeDesktop";
+import HomeMobile from "@/components/HomeMobile";
+export default {
+  components: {HomeMobile, HomeDesktop},
+  data: () => ({
+    screenWidth: window.innerWidth,
+  }),
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.onResize);
+    })
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize);
+  },
+  methods: {
+    onResize() {
+      this.screenWidth = window.innerWidth
     }
   }
 }
-</style>
+</script>

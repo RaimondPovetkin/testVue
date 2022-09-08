@@ -1,50 +1,66 @@
 <template>
   <v-app id="inspire">
+
+    <v-navigation-drawer
+        v-if="screenWidth<700"
+        v-model="drawer"
+        app
+    >
+      <v-container>
+        <text-field
+            class="mt-3"
+            @changeFilter="filter=$event"
+        >
+        </text-field>
+        <select-items
+            class="my-3"
+            @changeCurrentView="currentView=$event"
+            :viewItems="viewItems"
+        >
+        </select-items>
+        <menu-container></menu-container>
+      </v-container>
+    </v-navigation-drawer>
+
     <v-app-bar
         app
         color="white"
         flat
     >
-      <v-container class="py-0 fill-height">
-        <v-avatar
-            class="mr-10"
-            color="grey darken-1"
-            size="32"
-        ></v-avatar>
+      <div v-if="screenWidth<700" class="d-flex align-center">
+        <div class="d-flex align-center">
+          <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+          <v-toolbar-title>Application</v-toolbar-title>
+        </div>
+      </div>
 
-<!--        <v-btn-->
-<!--            v-for="link in links"-->
-<!--            :key="link"-->
-<!--            text-->
-<!--        >-->
-<!--          {{ link }}-->
-<!--        </v-btn>-->
+      <v-container class="py-0 fill-height" v-else>
+        <v-avatar
+            color="#1976D2"
+            class="mr-10"
+            size="32"
+        >
+          <v-icon dark>
+            mdi-account-circle
+          </v-icon>
+        </v-avatar>
+        <v-toolbar-title>Application</v-toolbar-title>
 
         <v-spacer></v-spacer>
 
-        <v-responsive max-width="160">
-          <v-text-field
-              v-model="filter"
-              class="mr-8"
-              dense
-              flat
-              hide-details
-              rounded
-              solo-inverted
-          ></v-text-field>
+        <v-responsive max-width="220">
+          <text-field
+              @changeFilter="filter=$event"
+          >
+          </text-field>
         </v-responsive>
 
-
         <v-responsive max-width="160">
-          <v-select
-              v-model="currentView"
-              :items="viewItems.map(i=>i.value)"
-              menu-props="auto"
-              label="Select"
-              hide-details
-              :prepend-icon="viewItems.find(i=>i.value === currentView).icon"
-              single-line
-          ></v-select>
+          <select-items
+              @changeCurrentView="currentView=$event"
+              :viewItems="viewItems"
+          >
+          </select-items>
         </v-responsive>
 
       </v-container>
@@ -53,118 +69,28 @@
     <v-main class="grey lighten-3">
       <v-container>
         <v-row>
-          <v-col cols="2">
+          <v-col cols="2" v-if="screenWidth>700">
             <v-sheet rounded="lg">
-              <v-list color="transparent">
-                <v-list-item
-                    v-for="n in 5"
-                    :key="n"
-                    link
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      Item {{ n }}
-                      <br>
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-
-                <v-divider class="my-2"></v-divider>
-
-                <v-list-item
-                    link
-                    color="grey lighten-4"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      Refresh
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
+              <menu-container></menu-container>
             </v-sheet>
           </v-col>
 
           <v-col>
             <v-sheet
-                min-height="70vh"
                 rounded="lg"
             >
               <!--  -->
-
-              <div
-                  class="grid pt-5 pl-5"
+              <grid-items
                   v-if="currentView==='Сетка'"
+                  :paginatedItems="paginatedItems"
               >
-                <div v-for="(item, i) in paginatedItems" :key="i">
-                  <v-card height="110" align="center">
-                    <v-img
-                        :src="item.src"
-                        class="white--text align-end"
-                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                        width="100%"
-                        height="70%"
-                    >
-                    </v-img>
-                    <v-row
-                        class="ma-1"
-                        align="center"
-                        justify="space-between"
-                    >
-                      <div class="hidden">
-                        <v-card-title class="pa-1 text-caption" v-text="item.title"></v-card-title>
-                      </div>
-
-
-                      <!--                      <v-btn icon >-->
-                      <!--                        <v-icon>mdi-delete</v-icon>-->
-                      <!--                      </v-btn>-->
-                    </v-row>
-
-
-                  </v-card>
-                </div>
-              </div>
-
-              <v-data-table
-                  :hide-default-footer="true"
-                  :hide-default-header="true"
-                  :headers="headers"
-                  :items="paginatedItems"
-                  :items-per-page="10"
-                  class="elevation-1 pt-5"
+              </grid-items>
+              <table-items
                   v-else
+                  :headers="headers"
+                  :paginatedItems="paginatedItems"
               >
-                <template v-slot:body="{items}">
-                  <tbody>
-                  <tr v-for="(item,index) in items" :key="index">
-                    <td>
-                      <img
-                          :src="item.src"
-                          class="white--text align-end"
-                          gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                          width="110"
-                          height="77"
-                      />
-                    </td>
-                    <td>
-                      {{item.title}}
-                    </td>
-                    <td>
-                      {{item.size}}
-                    </td>
-                    <td>
-                      {{item.date}}
-                    </td>
-                    <td>
-                      <v-btn icon >
-                        <v-icon>mdi-delete</v-icon>
-                      </v-btn>
-                    </td>
-                  </tr>
-                  </tbody>
-                </template>
-              </v-data-table>
+              </table-items>
               <div class="text-center mt-10 pb-5">
                 <v-pagination
                     v-if="paginationLength>1"
@@ -181,118 +107,26 @@
 </template>
 
 <script>
+import TableItems from "@/components/TableItems";
+import GridItems from "@/components/GridItems";
+import SelectItems from "@/components/SelectItems";
+import TextField from "@/components/TextField";
+import MenuContainer from "@/components/MenuContainer";
+
 export default {
+  components: {MenuContainer, TextField, SelectItems, GridItems, TableItems},
+  props: {
+    cloudItems: Array
+  },
   data: () => ({
-    paginationLength:2,
-    filter:'',
-    page:1,
+    drawer: null,
+    screenWidth: window.innerWidth,
+    paginationLength: 2,
+    filter: '',
+    page: 1,
     links: [
       'Dashboard',
       'Messages',
-    ],
-    cloudItems: [
-      {date: '2022-01-02',
-        title: 'Pre-fab homes',
-        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Favorite road trips',
-        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        size: 6
-      },
-      {date: '2022-01-02',
-        title: 'Pre-fab homes',
-        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Favorite road trips',
-        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        size: 6
-      },
-      {date: '2022-01-02',
-        title: 'Pre-fab homes',
-        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Favorite road trips',
-        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        size: 6
-      },
-      {date: '2022-01-02',
-        title: 'Pre-fab homes',
-        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Favorite road trips',
-        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        size: 6
-      },
-      {date: '2022-01-02',
-        title: 'Pre-fab homes',
-        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Favorite road trips',
-        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        size: 6
-      },
-      {date: '2022-01-02',
-        title: 'Pre-fab homes',
-        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Favorite road trips',
-        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
-        size: 6
-      },
-      {
-        date: '2022-01-02',
-        title: 'Best airlines',
-        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
-        size: 6
-      },
     ],
     currentView: 'Сетка',
     viewItems: [
@@ -337,38 +171,36 @@ export default {
       return this.page * 10;
     },
     filteredItems() {
-      return this.cloudItems.filter(item => item.title.toUpperCase().includes(this.filter.toUpperCase()));
+      return this.cloudItems.filter(item => item.title.toUpperCase().includes(this.filter?.toUpperCase()));
     },
     paginatedItems() {
       return this.filteredItems.slice(this.startIndex, this.endIndex);
     },
   },
-  watch:{
+  watch: {
     filter() {
       this.page = 1;
       this.changePaginationLength()
     },
   },
-  methods:{
-    changePaginationLength(){
-      this.paginationLength = Math.ceil(this.filteredItems.length/10)
+  methods: {
+    changePaginationLength() {
+      this.paginationLength = Math.ceil(this.filteredItems.length / 10)
+    },
+    onResize() {
+      this.screenWidth = window.innerWidth
     }
-  }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.onResize);
+    })
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.onResize);
+  },
 }
 </script>
 <style>
-.grid {
-  display: grid;
-  grid-gap: 10px;
-  grid-template-columns: repeat(auto-fill, 110px);
-}
 
-.grid > * {
-  height: 110px;
-}
-.hidden {
-  width: 110px;
-  height: 20px;
-  overflow: hidden;
-}
 </style>

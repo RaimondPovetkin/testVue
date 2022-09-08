@@ -1,22 +1,122 @@
 <template>
 
 
-  <div v-if="screenWidth>700">
-    <home-desktop/>
-  </div>
-  <div v-else>
-    <home-mobile/>
-  </div>
+
+    <home-desktop :cloudItems="cloudItems"/>
+
 
 </template>
 
 <script>
 import HomeDesktop from "@/components/HomeDesktop";
-import HomeMobile from "@/components/HomeMobile";
 export default {
-  components: {HomeMobile, HomeDesktop},
+  components: { HomeDesktop},
   data: () => ({
     screenWidth: window.innerWidth,
+    cloudItems: [
+      {date: '2022-01-02',
+        title: 'Pre-fab homes',
+        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Favorite road trips',
+        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        size: 6
+      },
+      {date: '2022-01-02',
+        title: 'Pre-fab homes',
+        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Favorite road trips',
+        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        size: 6
+      },
+      {date: '2022-01-02',
+        title: 'Pre-fab homes',
+        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Favorite road trips',
+        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        size: 6
+      },
+      {date: '2022-01-02',
+        title: 'Pre-fab homes',
+        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Favorite road trips',
+        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        size: 6
+      },
+      {date: '2022-01-02',
+        title: 'Pre-fab homes',
+        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Favorite road trips',
+        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        size: 6
+      },
+      {date: '2022-01-02',
+        title: 'Pre-fab homes',
+        src: 'https://cdn.vuetifyjs.com/images/cards/house.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Favorite road trips',
+        src: 'https://cdn.vuetifyjs.com/images/cards/road.jpg',
+        size: 6
+      },
+      {
+        date: '2022-01-02',
+        title: 'Best airlines',
+        src: 'https://cdn.vuetifyjs.com/images/cards/plane.jpg',
+        size: 6
+      },
+    ],
   }),
   mounted() {
     this.$nextTick(() => {

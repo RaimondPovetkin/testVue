@@ -37,7 +37,11 @@ export default {
     },
   },
   mounted() {
-    this.currentSelectView = localStorage.getItem('currentSelect')
+    if(localStorage.getItem('currentSelect')){
+      this.currentSelectView = localStorage.getItem('currentSelect')
+    } else {
+      this.currentSelectView = 'Сетка'
+    }
     this.$emit('changeCurrentView', this.currentSelectView)
   }
 }

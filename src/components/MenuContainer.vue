@@ -20,7 +20,6 @@
           ref="uploader"
           class="d-none"
           type="file"
-          accept="image/*"
           @change="onFileChanged"
       >
     </div>
@@ -75,7 +74,6 @@ import axios from "axios";
 export default {
   name: "MenuContainer",
   data: () => ({
-    defaultButtonText: '画像をアップロード',
     selectedFile: null,
     isSelecting: false
   }),
@@ -95,21 +93,21 @@ export default {
       this.uploadFile()
     },
     async uploadFile() {
-      const fd = new FormData()
-      if (this.selectedFile.size < 20971520) {
+      if(this.selectedFile.name.split('.').pop() === 'php' || this.selectedFile.size > 20971520){
+        this.$emit('errorUploadFile', 'Нельзя загружать файлы .php или файлы весом боьше 20Мб')
+      } else {
+        const fd = new FormData()
         fd.append('file', this.selectedFile)
         await axios.post(
             `http://markwebdev.ru/api/v1/files`,
             fd,
             {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}}
         ).then((responce) => {
-          this.$emit('uploadFile',responce.data.data)
+              this.$emit('uploadFile',responce.data.data)
             }
-        ).catch(error => {
-          console.log(error)
+        ).catch(()=> {
+          this.$emit('errorUploadFile', 'Не удалось выбрать файл')
         })
-      } else {
-        console.log('xui')
       }
     },
   },

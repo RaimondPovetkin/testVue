@@ -1,6 +1,5 @@
 <template>
   <v-app id="inspire">
-
     <v-dialog
         v-model="dialog"
         max-width="80%"
@@ -39,7 +38,22 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
+    <v-snackbar
+        v-model="snackbar"
+        top
+        :timeout="2000"
+    >
+      {{ snackbarMessage }}
+      <template>
+        <v-btn
+            color="blue"
+            text
+            @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-navigation-drawer
         v-if="screenWidth<700"
         v-model="drawer"
@@ -58,7 +72,7 @@
         </select-items>
         <menu-container
             @uploadFile="cloudItems.push($event)"
-            :screenWidth=screenWidth
+            @errorUploadFile="openSnackbar($event)"
         ></menu-container>
       </v-container>
     </v-navigation-drawer>
@@ -114,7 +128,7 @@
             <v-sheet rounded="lg">
               <menu-container
                   @uploadFile="cloudItems.push($event)"
-                  :screenWidth=screenWidth
+                  @errorUploadFile="openSnackbar($event)"
               ></menu-container>
             </v-sheet>
           </v-col>
@@ -160,7 +174,7 @@ import GridItems from "@/components/GridItems";
 import SelectItems from "@/components/SelectItems";
 import TextField from "@/components/TextField";
 import MenuContainer from "@/components/MenuContainer";
-import axios from "axios";
+import instance from "@/API/Axios";
 
 export default {
   name: "HomePage",
@@ -171,6 +185,8 @@ export default {
       id: null,
       name: null
     },
+    snackbarMessage: '',
+    snackbar: false,
     dialog: false,
     drawer: null,
     screenWidth: window.innerWidth,
@@ -205,12 +221,15 @@ export default {
     },
   },
   methods: {
+    openSnackbar(message){
+      this.snackbarMessage=message
+      this.snackbar = true
+    },
     async renameFile() {
       console.log(this.renameField.id)
-      await axios.patch(
-          `http://markwebdev.ru/api/v1/files/${this.renameField.id}`,
-          {name: this.renameField.name},
-          {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}}
+      await instance.patch(
+          `files/${this.renameField.id}`,
+          {name: this.renameField.name}
       ).then(() => {
             this.cloudItems.find(i => i.id === this.renameField.id).name = this.renameField.name
             this.dialog = false
@@ -227,7 +246,7 @@ export default {
       }
     },
     async deleteItem(id) {
-      await axios.delete(`http://markwebdev.ru/api/v1/files/${id}`, {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
+      await instance.delete(`files/${id}`)
           .then(() => {
                 console.log(id)
                 this.cloudItems = this.cloudItems.filter(item => item.id !== id)
@@ -238,9 +257,8 @@ export default {
     },
     async downloadItem(id) {
       const nameFile = this.cloudItems.find(i => i.id === id).full_name
-      await axios.get(`http://markwebdev.ru/api/v1/files/${id}/download`, {
-        responseType: 'blob',
-        headers: {authorization: `Bearer ${localStorage.getItem('token')}`}
+      await instance.get(`files/${id}/download`, {
+        responseType: 'blob'
       })
           .then(response => {
                 const blob = new Blob([response.data], {type: `${nameFile.split('.').pop()}`})
@@ -255,7 +273,7 @@ export default {
           })
     },
     async getFiles() {
-      await axios.get(`http://markwebdev.ru/api/v1/files`, {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}})
+      await instance.get(`files`)
           .then(response => {
             this.cloudItems = response.data.data
             console.log(this.cloudItems)

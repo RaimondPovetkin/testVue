@@ -1,5 +1,21 @@
 <template>
   <v-app id="inspire">
+    <v-snackbar
+        v-model="snackbar"
+        top
+        :timeout="2000"
+    >
+      Неправильно введён пароль или email
+      <template>
+        <v-btn
+            color="blue"
+            text
+            @click="snackbar = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-container fill-height fluid>
       <v-row justify="space-around" align="center">
         <v-col
@@ -15,11 +31,13 @@
                 v-model="email"
                 placeholder="Почтовый адрес"
                 required
+                :rules="emailRules"
             >
             </v-text-field>
             <v-text-field
                 v-model="password"
                 placeholder="Пароль"
+                :rules="requiredRules"
             >
             </v-text-field>
             <span>
@@ -48,24 +66,32 @@
 </template>
 
 <script>
-import axios from "axios";
+import instance from "@/API/Axios";
 
 export default {
   name: "LoginPage",
   data: () => ({
+    snackbar: false,
     password: '',
     token: '',
     email: '',
+    emailRules: [
+      v => !!v || 'Введите e-mail',
+      v => /.+@.+/.test(v) || 'Введите валидный e-mail',
+    ],
+    requiredRules: [
+      v => !!v || 'Введите пароль',
+    ],
   }),
   methods: {
     async loginClick() {
-      await axios.post(`http://markwebdev.ru/api/v1/auth/login?email=${this.email}&password=${this.password}`)
+      await instance.post(`auth/login?email=${this.email}&password=${this.password}`)
           .then(response => {
             this.token = response.data.data.token
             localStorage.setItem('token', response.data.data.token)
             this.$router.push('home')
-          }).catch(error => {
-            console.log(error)
+          }).catch(() => {
+            this.snackbar = true
           })
     },
   }

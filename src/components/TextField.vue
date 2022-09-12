@@ -1,7 +1,7 @@
 <template>
   <v-text-field
       prepend-icon="mdi-magnify"
-      placeholder="Find"
+      placeholder="Найти"
       v-model="filter"
       @input="$emit('changeFilter', filter)"
       class="mr-8"

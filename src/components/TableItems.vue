@@ -11,6 +11,9 @@
       <template v-slot:body="{items}">
         <tbody>
         <tr v-for="(item,index) in items" :key="index">
+          <div>
+
+          </div>
           <td>
             <v-icon
                 size="32"
@@ -25,9 +28,17 @@
             {{ item.size }}
           </td>
           <td class="item">
-            <v-btn icon>
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
+            <div class="item-flex">
+              <v-btn icon @click="$emit('downloadItem', item.id)">
+                <v-icon size="18">mdi-download</v-icon>
+              </v-btn>
+              <v-btn icon @click="$emit('renameItem', item.id)">
+                <v-icon size="18">mdi-lead-pencil</v-icon>
+              </v-btn>
+              <v-btn icon @click="$emit('deleteItem', item.id)">
+                <v-icon size="18">mdi-delete</v-icon>
+              </v-btn>
+            </div>
           </td>
         </tr>
         </tbody>
@@ -54,18 +65,34 @@ export default {
 }
 </script>
 
-<style scoped>
-@media (max-width: 600px) {
-  .item {
-    min-width: 80px;
-    font-size: 8px;
-    overflow: hidden;
-  }
+<style lang="sass">
+$edit-dialog-content-padding: 0 2px !default
+$medium: 600px
 
-  .item-title {
-    min-width: 120px;
-    font-size: 8px;
-    overflow: hidden;
-  }
-}
+.item-flex
+  display: flex
+@media screen and (max-width: $medium)
+  .item
+    min-width: 80px
+    font-size: 8px
+    overflow: hidden
+  .item-title
+    width: 100%
+    min-width: 120px
+    font-size: 8px
+    overflow: hidden
+
+//@media (max-width: 600px) {
+//  .item {
+//    min-width: 80px;
+//    font-size: 8px;
+//    overflow: hidden;
+//  }
+//
+//  .item-title {
+//    min-width: 120px;
+//    font-size: 8px;
+//    overflow: hidden;
+//  }
+//}
 </style>

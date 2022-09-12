@@ -56,7 +56,10 @@
             @changeCurrentView="currentView=$event"
         >
         </select-items>
-        <menu-container></menu-container>
+        <menu-container
+            @uploadFile="cloudItems.push($event)"
+            :screenWidth=screenWidth
+        ></menu-container>
       </v-container>
     </v-navigation-drawer>
 
@@ -65,7 +68,7 @@
         color="white"
         flat
     >
-      <div v-if="screenWidth<700" class="d-flex align-center">
+      <div v-if="screenWidth<700">
         <div class="d-flex align-center">
           <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
           <v-toolbar-title>Application</v-toolbar-title>
@@ -83,10 +86,7 @@
           </v-icon>
         </v-avatar>
         <v-toolbar-title>Application</v-toolbar-title>
-        <v-file-input
-            @change="selectFile"
-            truncate-length="15"
-        ></v-file-input>
+
 
         <v-spacer></v-spacer>
 
@@ -110,9 +110,12 @@
     <v-main class="grey lighten-3">
       <v-container>
         <v-row>
-          <v-col cols="2" v-if="screenWidth>700">
+          <v-col cols="3" v-if="screenWidth>700">
             <v-sheet rounded="lg">
-              <menu-container></menu-container>
+              <menu-container
+                  @uploadFile="cloudItems.push($event)"
+                  :screenWidth=screenWidth
+              ></menu-container>
             </v-sheet>
           </v-col>
 
@@ -131,6 +134,9 @@
               <table-items
                   v-else
                   :paginatedItems="paginatedItems"
+                  @downloadItem="downloadItem($event)"
+                  @renameItem="renameDialog($event)"
+                  @deleteItem="deleteItem($event)"
               >
               </table-items>
               <div class="text-center mt-10 pb-5">
@@ -199,28 +205,6 @@ export default {
     },
   },
   methods: {
-    async uploadFile() {
-      const fd = new FormData()
-      if (this.selectedFile.size < 20971520) {
-      fd.append('file', this.selectedFile)
-      await axios.post(
-          `http://markwebdev.ru/api/v1/files`,
-          fd,
-          {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}}
-      ).then((responce) => {
-        this.cloudItems.push(responce.data.data)
-          }
-      ).catch(error => {
-        console.log(error)
-      })
-      } else {
-        console.log('xui')
-      }
-    },
-    selectFile(event) {
-      this.selectedFile = event
-      this.uploadFile()
-    },
     async renameFile() {
       console.log(this.renameField.id)
       await axios.patch(

@@ -148,12 +148,14 @@
               <table-items
                   v-else
                   :paginatedItems="paginatedItems"
+                  :getSizeItem="getSizeItem"
                   @downloadItem="downloadItem($event)"
                   @renameItem="renameDialog($event)"
                   @deleteItem="deleteItem($event)"
               >
               </table-items>
               <div class="text-center mt-10 pb-5">
+                {{getCurrentSize()}}
                 <v-pagination
                     v-if="paginationLength>1"
                     v-model="page"
@@ -221,6 +223,20 @@ export default {
     },
   },
   methods: {
+    getSizeItem(size){
+      if (size>(1024*1024)){
+        return Math.round(size/(1024*1024))+" МБ"
+      }
+      else if (size>1024){
+        return Math.round(size/1024)+" КБ"
+      } else {
+        return size+" байт"
+      }
+    },
+    getCurrentSize(){
+      let size = this.cloudItems.reduce((sum, item) => sum + item.size, 0);
+      return this.getSizeItem(size)
+    },
     openSnackbar(message){
       this.snackbarMessage=message
       this.snackbar = true

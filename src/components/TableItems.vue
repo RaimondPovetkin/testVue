@@ -24,10 +24,10 @@
           <td class="item-title">
             {{ item.name }}
           </td>
-          <td class="item">
-            {{ item.size }}
+          <td class="item-size">
+            {{ getSizeItem(item.size)}}
           </td>
-          <td class="item">
+          <td class="item" padding="1">
             <div class="item-flex">
               <v-btn icon @click="$emit('downloadItem', item.id)">
                 <v-icon size="18">mdi-download</v-icon>
@@ -60,15 +60,21 @@
 export default {
   name: "TableItems",
   props: {
-    paginatedItems: Array
+    paginatedItems: Array,
+    getSizeItem: Function
   },
+  methods:{
+  }
 }
 </script>
 
 <style lang="sass">
 $edit-dialog-content-padding: 0 2px !default
 $medium: 600px
-
+.item-size
+  min-width: 100px
+  font-size: 8px
+  overflow: hidden
 .item-flex
   display: flex
 @media screen and (max-width: $medium)

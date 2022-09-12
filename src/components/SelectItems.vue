@@ -1,7 +1,7 @@
 <template>
   <v-select
       v-model="currentSelectView"
-      @change="$emit('changeCurrentView', currentSelectView)"
+      @change="setcurrentView()"
       :items="viewItems.map(i=>i.value)"
       menu-props="auto"
       label="Select"
@@ -14,15 +14,32 @@
 <script>
 export default {
   name: "SelectItems",
-  props: {
-    viewItems: Array
-  },
   emits: {
     changeCurrentView: null
   },
   data: () => ({
-    currentSelectView: 'Сетка'
-  })
+    currentSelectView: 'Сетка',
+    viewItems: [
+      {
+        value: 'Сетка',
+        icon: 'mdi-view-grid'
+      },
+      {
+        value: 'Список',
+        icon: 'mdi-format-list-bulleted'
+      }
+    ],
+  }),
+  methods: {
+    setcurrentView(){
+      localStorage.setItem('currentSelect', this.currentSelectView)
+      this.$emit('changeCurrentView', this.currentSelectView)
+    },
+  },
+  mounted() {
+    this.currentSelectView = localStorage.getItem('currentSelect')
+    this.$emit('changeCurrentView', this.currentSelectView)
+  }
 }
 </script>
 

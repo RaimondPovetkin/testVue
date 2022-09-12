@@ -20,7 +20,9 @@
         color="grey lighten-4"
     >
       <v-list-item-content>
-        <v-list-item-title>
+        <v-list-item-title
+            @click="foo"
+        >
           Refresh
         </v-list-item-title>
       </v-list-item-content>
@@ -30,7 +32,12 @@
 
 <script>
 export default {
-  name: "MenuContainer"
+  name: "MenuContainer",
+  methods:{
+    foo(){
+      console.log(localStorage.getItem('token'))
+    }
+  }
 }
 </script>
 

@@ -1,43 +1,15 @@
 <template>
   <v-app id="inspire">
-    <v-dialog
-        v-model="dialog"
-        max-width="80%"
-    >
-      <v-card>
-        <v-card-title class="text-h5">
-          Переименовать файл
-        </v-card-title>
-
-        <v-text-field class="px-5" v-model="renameField.name">
-        </v-text-field>
-
-        <v-card-actions>
-
-          <div
-              align="center"
-              justify="start"
-          >
-            <v-btn
-                small
-                color="primary"
-                @click="renameFile()"
-            >
-              Переименовать
-            </v-btn>
-            <v-btn
-                small
-                class="ml-3"
-                color="primary"
-                @click="dialog = false"
-            >
-              Отмена
-            </v-btn>
-          </div>
-
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <dialog-rename
+        v-model="dialogRename"
+        :dialogString="dialogString"
+        @SaveName="renameFile($event)"
+    ></dialog-rename>
+    <dialog-new-folder
+        v-model="dialogNewFolder"
+        :dialogString="dialogString"
+        @SaveFolder="createFolder($event)"
+    ></dialog-new-folder>
     <v-snackbar
         v-model="snackbar"
         top
@@ -100,6 +72,7 @@
           </v-icon>
         </v-avatar>
         <v-toolbar-title>Application</v-toolbar-title>
+        {{ dialogString }}
 
 
         <v-spacer></v-spacer>
@@ -129,6 +102,7 @@
               <menu-container
                   @uploadFile="cloudItems.push($event)"
                   @errorUploadFile="openSnackbar($event)"
+                  @createFolder="createFolderDialog"
               ></menu-container>
             </v-sheet>
           </v-col>
@@ -136,7 +110,14 @@
           <v-col>
             <v-sheet
                 rounded="lg"
-            >
+            ><v-btn @click="currentFolder = -1">Файл</v-btn>
+              <folder-items
+                  v-if="currentFolder === -1"
+                  :paginatedItems="folders"
+                  @changeCurrentFolder="changeFolder($event)"
+                  :getSizeItem="getSizeItem"
+              >
+              </folder-items>
               <grid-items
                   v-if="currentView==='Сетка'"
                   :paginatedItems="paginatedItems"
@@ -155,7 +136,7 @@
               >
               </table-items>
               <div class="text-center mt-10 pb-5">
-                {{getCurrentSize()}}
+                {{ getCurrentSize() }}
                 <v-pagination
                     v-if="paginationLength>1"
                     v-model="page"
@@ -177,11 +158,20 @@ import SelectItems from "@/components/SelectItems";
 import TextField from "@/components/TextField";
 import MenuContainer from "@/components/MenuContainer";
 import instance from "@/API/Axios";
+import DialogRename from "@/components/DialogRename";
+import DialogNewFolder from "@/components/DialogNewFolder";
+import FolderItems from "@/components/FolderItems";
 
 export default {
   name: "HomePage",
-  components: {MenuContainer, TextField, SelectItems, GridItems, TableItems},
+  components: {DialogNewFolder, DialogRename, MenuContainer, TextField, SelectItems, GridItems, FolderItems, TableItems},
   data: () => ({
+    currentFolder: -1,
+    folders: [],
+    dialogRename: false,
+    dialogString: '',
+    dialogTitle: '',
+    dialogNewFolder: false,
     selectedFile: null,
     renameField: {
       id: null,
@@ -210,7 +200,7 @@ export default {
       return this.page * 10;
     },
     filteredItems() {
-      return this.cloudItems.filter(item => item.name.toUpperCase().includes(this.filter?.toUpperCase()));
+      return this.cloudItems.filter(item => item.full_name.toUpperCase().includes(this.filter?.toUpperCase()));
     },
     paginatedItems() {
       return this.filteredItems.slice(this.startIndex, this.endIndex);
@@ -221,27 +211,49 @@ export default {
       this.page = 1;
       this.changePaginationLength()
     },
+    currentFolder(){
+      this.getFiles()
+    }
   },
   methods: {
-    getSizeItem(size){
-      if (size>(1024*1024)){
-        return Math.round(size/(1024*1024))+" МБ"
-      }
-      else if (size>1024){
-        return Math.round(size/1024)+" КБ"
+    changeFolder(id){
+      this.currentFolder = id
+    },
+    createFolderDialog() {
+      this.dialogString = 'Новая папка'
+      this.dialogNewFolder = true
+    },
+    async createFolder(nameFolder) {
+      this.dialogNewFolder = false
+
+      await instance.post(`folders?name=${nameFolder}`)
+          .then((responce) => {
+                this.folders.push(responce.data.data)
+              }
+          ).catch((error) => {
+            this.openSnackbar(error.response.data.message)
+          })
+    },
+    getSizeItem(size) {
+      if (size > (1024 * 1024)) {
+        return Math.round(size / (1024 * 1024)) + " МБ"
+      } else if (size > 1024) {
+        return Math.round(size / 1024) + " КБ"
       } else {
-        return size+" байт"
+        return size + " байт"
       }
     },
-    getCurrentSize(){
+    getCurrentSize() {
       let size = this.cloudItems.reduce((sum, item) => sum + item.size, 0);
       return this.getSizeItem(size)
     },
-    openSnackbar(message){
-      this.snackbarMessage=message
+    openSnackbar(message) {
+      this.snackbarMessage = message
       this.snackbar = true
     },
-    async renameFile() {
+    async renameFile(newName) {
+      this.dialogRename = false
+      this.renameField.name = newName
       console.log(this.renameField.id)
       await instance.patch(
           `files/${this.renameField.id}`,
@@ -255,7 +267,8 @@ export default {
       })
     },
     renameDialog(id) {
-      this.dialog = true
+      this.dialogString = this.cloudItems.find(i => i.id === id).name
+      this.dialogRename = true
       this.renameField = {
         id: id,
         name: this.cloudItems.find(i => i.id === id).name
@@ -289,10 +302,19 @@ export default {
           })
     },
     async getFiles() {
-      await instance.get(`files`)
+      await instance.get(`files?folder_id=${this.currentFolder}`)
           .then(response => {
             this.cloudItems = response.data.data
             console.log(this.cloudItems)
+          }).catch(error => {
+            console.log(error)
+          })
+    },
+    async getFolders() {
+      await instance.get(`folders`)
+          .then(response => {
+            console.log(response)
+            this.folders = response.data.data
           }).catch(error => {
             console.log(error)
           })
@@ -308,7 +330,8 @@ export default {
     this.$nextTick(() => {
       window.addEventListener('resize', this.onResize);
     })
-    this.getFiles()
+    this.getFiles(-1)
+    this.getFolders()
     this.changePaginationLength()
   },
   beforeDestroy() {

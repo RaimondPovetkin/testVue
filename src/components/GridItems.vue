@@ -5,7 +5,7 @@
           class="grid pt-5 px-5"
       >
         <div v-for="(item, i) in paginatedItems" :key="i">
-          <v-card height="110" align="center" @contextmenu="show">
+          <v-card height="110" align="center">
             <v-icon
                 class="mt-5"
                 size="32"
@@ -18,7 +18,7 @@
                 justify="space-between"
             >
               <div class="hidden">
-                <v-card-title class="pa-1 text-caption" v-text="item.name"></v-card-title>
+                <v-card-title class="pa-1 text-caption justify-center" v-text="item.name"></v-card-title>
               </div>
             </v-row>
             <v-btn icon @click="$emit('downloadItem', item.id)">
@@ -32,14 +32,6 @@
             </v-btn>
 
           </v-card>
-          <v-menu
-
-              :position-x="100"
-              :position-y="100"
-              absolute
-              offset-y
-          >
-          </v-menu>
         </div>
       </div>
     </div>
@@ -59,20 +51,11 @@ export default {
   name: "GridItems",
   props:{
     paginatedItems:Array
-  },
-  methods:{
-    show(){
-      console.log('rrr')
-    }
   }
 }
 </script>
 
 <style scoped>
-.line{
-  border-bottom: 2px solid black;
-  width: 100%;
-}
 .grid {
   display: grid;
   grid-gap: 10px;

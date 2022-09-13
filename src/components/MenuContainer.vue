@@ -34,7 +34,7 @@
           dense
           rounded
           solo-inverted
-          @click="createFolder"
+          @click="createFolder()"
       >
         Новая папка
       </v-btn>
@@ -79,7 +79,7 @@ export default {
   }),
   methods:{
     createFolder(){
-      console.log('xuy')
+      this.$emit('createFolder')
     },
     selectFile() {
       this.isSelecting = true

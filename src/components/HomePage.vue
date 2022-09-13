@@ -365,7 +365,7 @@ export default {
 </script>
 <style>
 .blue-text{
-  color: #64a8ed;
+  color: #72a9e1;
   font-size: 13px;
 }
 .underline-text:hover{

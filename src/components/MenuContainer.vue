@@ -81,7 +81,6 @@ export default {
   data: () => ({
     selectedFile: null,
     isSelecting: false,
-    mainFolderSize: 0,
   }),
   props: {
     currentFolder: Number,

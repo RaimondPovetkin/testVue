@@ -47,12 +47,14 @@
               >
               </v-text-field>
               <v-text-field
+                  type="password"
                   v-model="password"
                   placeholder="Пароль"
                   :rules="requiredRules"
               >
               </v-text-field>
               <v-text-field
+                  type="password"
                   v-model="passwordDouble"
                   placeholder="Повторите пароль"
                   :rules="[password === passwordDouble || 'Пароли должны совпадать']"

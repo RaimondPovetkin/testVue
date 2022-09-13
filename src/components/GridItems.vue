@@ -18,7 +18,7 @@
                 justify="space-between"
             >
               <div class="hidden">
-                <v-card-title class="pa-1 text-caption justify-center" v-text="item.name"></v-card-title>
+                <v-card-title class="pa-1 text-caption justify-center" v-text="item.full_name"></v-card-title>
               </div>
             </v-row>
             <v-btn icon @click="$emit('downloadItem', item.id)">

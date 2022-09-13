@@ -1,6 +1,6 @@
 <template>
   <v-list color="transparent">
-    <div align="left" class="pt-5 load-field-block">
+    <div align="left" class="pt-6 load-field-block">
       <v-icon left class="pl-5">
         mdi-cloud-upload
       </v-icon>
@@ -35,6 +35,7 @@
           rounded
           solo-inverted
           @click="createFolder()"
+          :disabled="!(currentFolder === -1)"
       >
         Новая папка
       </v-btn>
@@ -60,6 +61,7 @@
     >
       <v-list-item-content>
         <v-list-item-title
+            @click="foo"
         >
           Refresh
         </v-list-item-title>
@@ -69,7 +71,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import instance from "@/API/Axios";
 
 export default {
   name: "MenuContainer",
@@ -77,7 +79,13 @@ export default {
     selectedFile: null,
     isSelecting: false
   }),
+  props: {
+    currentFolder: Number
+  },
   methods:{
+    foo(){
+      console.log(this.currentFolder)
+    },
     createFolder(){
       this.$emit('createFolder')
     },
@@ -98,10 +106,9 @@ export default {
       } else {
         const fd = new FormData()
         fd.append('file', this.selectedFile)
-        await axios.post(
-            `http://markwebdev.ru/api/v1/files`,
+        await instance.post(
+            `files?folder_id=${this.currentFolder}`,
             fd,
-            {headers: {authorization: `Bearer ${localStorage.getItem('token')}`}}
         ).then((responce) => {
               this.$emit('uploadFile',responce.data.data)
             }

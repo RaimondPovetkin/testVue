@@ -22,7 +22,7 @@
             </v-icon>
           </td>
           <td class="item-title">
-            {{ item.name }}
+            {{ item.full_name }}
           </td>
           <td class="item-size">
             {{ getSizeItem(item.size)}}
@@ -69,7 +69,6 @@ export default {
 </script>
 
 <style lang="sass">
-$edit-dialog-content-padding: 0 2px !default
 $medium: 600px
 .item-size
   min-width: 100px
@@ -87,18 +86,4 @@ $medium: 600px
     min-width: 120px
     font-size: 8px
     overflow: hidden
-
-//@media (max-width: 600px) {
-//  .item {
-//    min-width: 80px;
-//    font-size: 8px;
-//    overflow: hidden;
-//  }
-//
-//  .item-title {
-//    min-width: 120px;
-//    font-size: 8px;
-//    overflow: hidden;
-//  }
-//}
 </style>

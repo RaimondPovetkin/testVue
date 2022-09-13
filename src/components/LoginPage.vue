@@ -35,6 +35,7 @@
             >
             </v-text-field>
             <v-text-field
+                type="password"
                 v-model="password"
                 placeholder="Пароль"
                 :rules="requiredRules"

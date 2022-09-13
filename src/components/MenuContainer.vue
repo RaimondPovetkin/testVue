@@ -40,31 +40,34 @@
         Новая папка
       </v-btn>
     </div>
-    <v-list-item
-        v-for="n in 5"
-        :key="n"
-        link
-    >
+
+
+
+
+    <v-list-item class="big-padding">
       <v-list-item-content>
-        <v-list-item-title>
-          Item {{ n }}
-          <br>
+        <v-list-item-title
+        >
+          <span class="blue-text-main">
+            {{'На диске ' + allSize}}
+          </span>
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
 
+
+
     <v-divider class="my-2"></v-divider>
 
-    <v-list-item
-        link
-        color="grey lighten-4"
-    >
+    <v-list-item>
       <v-list-item-content>
-        <v-list-item-title
-            @click="foo"
+        <v-btn
+            outlined
+            color="error"
+            @click="logout"
         >
-          Refresh
-        </v-list-item-title>
+          Выйти
+        </v-btn>
       </v-list-item-content>
     </v-list-item>
   </v-list>
@@ -77,14 +80,22 @@ export default {
   name: "MenuContainer",
   data: () => ({
     selectedFile: null,
-    isSelecting: false
+    isSelecting: false,
+    mainFolderSize: 0,
   }),
   props: {
-    currentFolder: Number
+    currentFolder: Number,
+    allSize: String
   },
   methods:{
-    foo(){
-      console.log(this.currentFolder)
+    async logout(){
+      await instance.post(`auth/logout`)
+          .then(() => {
+            this.$router.push('/')
+              }
+          ).catch(error => {
+            console.log(error)
+          })
     },
     createFolder(){
       this.$emit('createFolder')
@@ -106,15 +117,29 @@ export default {
       } else {
         const fd = new FormData()
         fd.append('file', this.selectedFile)
-        await instance.post(
-            `files?folder_id=${this.currentFolder}`,
-            fd,
-        ).then((responce) => {
-              this.$emit('uploadFile',responce.data.data)
-            }
-        ).catch(()=> {
-          this.$emit('errorUploadFile', 'Не удалось выбрать файл')
-        })
+        if(this.currentFolder === -1){
+          await instance.post(
+              `files`,
+              fd,
+          ).then((responce) => {
+                this.$emit('uploadFile',responce.data.data)
+              }
+          ).catch(error=> {
+            console.log(error)
+            this.$emit('errorUploadFile', 'Не удалось выбрать файл')
+          })
+        } else {
+          await instance.post(
+              `files?folder_id=${this.currentFolder}`,
+              fd,
+          ).then((responce) => {
+                this.$emit('uploadFile',responce.data.data)
+              }
+          ).catch(error=> {
+            console.log(error)
+            this.$emit('errorUploadFile', 'Не удалось выбрать файл')
+          })
+        }
       }
     },
   },
@@ -122,6 +147,13 @@ export default {
 </script>
 
 <style scoped>
+.big-padding{
+  padding-top: 140px;
+}
+.blue-text-main{
+  color: #64a8ed;
+  font-size: 17px;
+}
 .load-field-block{
   display: flex;
   justify-content: center;
@@ -129,12 +161,6 @@ export default {
 .load-field {
   width: 65% !important;
 }
-/*@media (max-width: 1265px) {*/
-/*  .load-field {*/
-/*    width: 42% !important;*/
-/*    font-size: 8px;*/
-/*  }*/
-/*}*/
 @media (max-width: 700px) {
   .load-field {
     min-width: 60% !important;

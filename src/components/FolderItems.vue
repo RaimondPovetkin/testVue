@@ -18,7 +18,8 @@
             justify="space-between"
         >
           <div class="hidden">
-            <v-card-title class="pa-1 text-caption justify-center" v-text="item.name"></v-card-title>
+            <v-card-title class="pa-1 text-caption folder-name justify-center" v-text="item.name">
+            </v-card-title>
           </div>
           <div class="hidden">
             <v-card-title class="pa-1 text-caption justify-center">{{ getSizeItem(item.size)}}</v-card-title>
@@ -48,6 +49,9 @@ export default {
 </script>
 
 <style scoped>
+.folder-name{
+  font-weight: 700;
+}
 .grid {
   display: grid;
   grid-gap: 5px;
@@ -58,7 +62,7 @@ export default {
 }
 .hidden {
   width: 110px;
-  height: 20px;
+  height: 23px;
   overflow: hidden;
 }
 </style>

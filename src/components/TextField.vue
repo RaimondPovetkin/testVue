@@ -1,5 +1,6 @@
 <template>
   <v-text-field
+      clearable
       prepend-icon="mdi-magnify"
       placeholder="Найти"
       v-model="filter"

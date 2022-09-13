@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import AboutView from '@/views/AboutView'
 import HomePage from "@/components/HomePage";
 import LoginPage from "@/components/LoginPage";
 import RegisterBlock from "@/components/RegisterBlock";
@@ -14,11 +13,6 @@ let router = new VueRouter({
       path: '/home',
       name: 'home',
       component: HomePage
-    },
-    {
-      path: '/about',
-      name: 'about',
-      component: AboutView
     },
     {
       path: '/',

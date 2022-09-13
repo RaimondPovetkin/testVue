@@ -47,6 +47,7 @@
             @errorUploadFile="openSnackbar($event)"
             @createFolder="createFolderDialog"
             :currentFolder="currentFolder"
+            :allSize="getSizeItem(allSize)"
         ></menu-container>
       </v-container>
     </v-navigation-drawer>
@@ -103,6 +104,7 @@
                   @errorUploadFile="openSnackbar($event)"
                   @createFolder="createFolderDialog"
                   :currentFolder="currentFolder"
+                  :allSize="getSizeItem(allSize)"
               ></menu-container>
             </v-sheet>
           </v-col>
@@ -119,7 +121,7 @@
                 {{folders.find(i=>i.id === currentFolder)?.name}}
               </span>
               </div>
-              {{leftDrawer}}
+              {{filter}}
               <folder-items
                   v-if="currentFolder === -1"
                   :paginatedItems="folders"
@@ -146,7 +148,7 @@
               </table-items>
               <div v-if="cloudItems.length>0" class="text-left mt-10 pl-3">
                 <span class="blue-text">
-                  {{ 'В этой папке ' + getCurrentSize() }}
+                  {{ 'Объём папки ' + getCurrentSize() }}
                 </span>
               </div>
               <div class="text-center mt-10 pb-5">
@@ -180,6 +182,7 @@ export default {
   name: "HomePage",
   components: {DialogNewFolder, DialogRename, MenuContainer, TextField, SelectItems, GridItems, FolderItems, TableItems},
   data: () => ({
+    fullSize: [0,0],
     currentFolder: -1,
     folders: [],
     dialogString: '',
@@ -198,6 +201,7 @@ export default {
     page: 1,
     cloudItems: [],
     currentView: 'Сетка',
+    allSize: 0,
   }),
   computed: {
     startIndex() {
@@ -224,8 +228,19 @@ export default {
       this.getFiles()
       this.getFolders()
     },
+    cloudItems(){
+      this.gelAllSizeMainFiles()
+    },
   },
   methods: {
+    async gelAllSizeMainFiles(){
+      await instance.get(`files`)
+          .then(response => {
+            this.allSize = response.data.data.reduce((sum, item) => sum + item.size, 0)
+          }).catch(error => {
+            console.log(error)
+          })
+    },
     changeFolder(id){
       this.currentFolder = id
     },
@@ -328,6 +343,11 @@ export default {
     onResize() {
       this.screenWidth = window.innerWidth
     },
+    checkLogin(){
+      if(localStorage.getItem('token') === ''){
+        this.$router.push('/')
+      }
+    }
   },
   mounted() {
     this.screenWidth = window.screen.width
@@ -336,6 +356,7 @@ export default {
     })
     this.getFiles()
     this.getFolders()
+    this.checkLogin()
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.onResize);

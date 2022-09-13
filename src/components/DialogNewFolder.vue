@@ -22,7 +22,7 @@
               color="primary"
               @click="$emit('SaveFolder',inputText),inputText=''"
           >
-            Сохранить
+            Создать
           </v-btn>
           <v-btn
               small

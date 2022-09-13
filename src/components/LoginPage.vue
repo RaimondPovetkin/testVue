@@ -91,10 +91,14 @@ export default {
             this.token = response.data.data.token
             localStorage.setItem('token', response.data.data.token)
             this.$router.push('home')
-          }).catch(() => {
+          }).catch(error => {
+            console.log(error)
             this.snackbar = true
           })
     },
+  },
+  mounted() {
+    localStorage.setItem('token', '')
   }
 }
 </script>

@@ -110,8 +110,10 @@ export default {
   methods:{
     async registerClick(){
       if(this.valid){
-        await instance.post(`auth/register?email=${this.email}&name=Name11&password==${this.password}`)
+        await instance.post(`auth/register?email=${this.email}&name=${this.name}&password=${this.password}`)
             .then(response => {
+              console.log(this.email)
+              console.log(this.password)
               console.log(response.data)
               this.$router.push('/')
             }).catch(error => {

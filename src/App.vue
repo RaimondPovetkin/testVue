@@ -1,16 +1,15 @@
 <template>
-
   <div>
-      <main-wrapper />
+    <router-view>
+    <register-block></register-block>
+    </router-view>
   </div>
-
-
 </template>
 
 <script>
-import MainWrapper from "@/components/MainWrapper";
+import RegisterBlock from "@/components/auth/RegisterPage";
 
 export default {
-  components: {MainWrapper},
+  components: {RegisterBlock},
 }
 </script>

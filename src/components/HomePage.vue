@@ -170,12 +170,12 @@
 <script>
 import TableItems from "@/components/TableItems";
 import GridItems from "@/components/GridItems";
-import SelectItems from "@/components/SelectItems";
-import TextField from "@/components/TextField";
+import SelectItems from "@/components/UI/SelectField";
+import TextField from "@/components/UI/FilterField";
 import MenuContainer from "@/components/MenuContainer";
 import instance from "@/API/Axios";
-import DialogRename from "@/components/DialogRename";
-import DialogNewFolder from "@/components/DialogNewFolder";
+import DialogRename from "@/components/UI/DialogRename";
+import DialogNewFolder from "@/components/UI/DialogNewFolder";
 import FolderItems from "@/components/FolderItems";
 
 export default {
